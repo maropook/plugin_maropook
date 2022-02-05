@@ -79,10 +79,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "14984d6de11e4f29e7fdd8a9773b9720d965026e"
+      resolved-ref: "7be6437d694e1d89134901985988118214208760"
       url: "https://github.com/maropook/hello_plugin.git"
     source: git
-    version: "0.0.1"
+    version: "0.0.2"
   lints:
     dependency: transitive
     description:
