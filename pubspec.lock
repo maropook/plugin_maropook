@@ -69,6 +69,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  flutter_riverpod:
+    dependency: "direct main"
+    description:
+      name: flutter_riverpod
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -79,10 +86,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "7be6437d694e1d89134901985988118214208760"
+      resolved-ref: "584dd7d9ef9ac0a309eae2699b3c830d32a0befc"
       url: "https://github.com/maropook/hello_plugin.git"
     source: git
-    version: "0.0.2"
+    version: "0.0.3"
   lints:
     dependency: transitive
     description:
@@ -119,7 +126,7 @@ packages:
     source: hosted
     version: "1.8.0"
   riverpod:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: riverpod
       url: "https://pub.dartlang.org"

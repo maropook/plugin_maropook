@@ -1,19 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hello/hello.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'app_version.dart';
 
 void main() {
-  runApp(Navigator2test());
+  runApp(ProviderScope(child: Navigator2test()));
 }
 
-class Navigator2test extends StatefulWidget {
+final buttonIdProvider = StateProvider((ref) => 0);
+
+class Navigator2test extends ConsumerWidget {
   @override
-  State<Navigator2test> createState() => _Navigator2testState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    var buttonId = ref.watch(buttonIdProvider);
+    return MaterialApp(
+        home: Navigator(
+            pages: [
+          MaterialPage(child: MenuPage2()),
+          if (buttonId == 1)
+            MaterialPage(child: Page2())
+          else if (buttonId == 2)
+            MaterialPage(child: HelloPage())
+        ],
+            onPopPage: (route, result) {
+              if (!route.didPop(result)) {
+                return false;
+              }
+              ref.read(buttonIdProvider.state).state = 0;
+              return true;
+            }));
+  }
 }
 
-class _Navigator2testState extends State<Navigator2test> {
+class MenuPage2 extends ConsumerWidget {
+  MenuPage2({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      appBar: AppBar(title: Text('MenuPage')),
+      body: Center(
+          child: Column(
+        children: [
+          ElevatedButton(
+              onPressed: () {
+                ref.read(buttonIdProvider.state).state = 1;
+              },
+              child: Text('Page1')),
+          ElevatedButton(
+              onPressed: () {
+                ref.read(buttonIdProvider.state).state = 2;
+              },
+              child: Text('Page2'))
+        ],
+      )),
+    );
+  }
+}
+
+class Page5 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+}
+
+class Navigator2test2 extends StatefulWidget {
+  @override
+  State<Navigator2test2> createState() => _Navigator2testState();
+}
+
+class _Navigator2testState extends State<Navigator2test2> {
   int? _buttonId;
   @override
   Widget build(BuildContext context) {
@@ -108,8 +169,8 @@ class Page2 extends StatefulWidget {
 }
 
 class _Page2State extends State<Page2> {
-  String _platformVersion = 'Unknown';
-  String _platformVersion2 = 'Unknown2';
+  String _platformVersion = 'Unknown: HelloPlugin';
+  String _platformVersion2 = 'Unknown: Native';
 
   Future<void> getPlatformState() async {
     String platformVersion;
@@ -159,10 +220,91 @@ class _Page2State extends State<Page2> {
   }
 }
 
-class Page3 extends StatelessWidget {
+class Page3 extends StatefulWidget {
+  @override
+  State<Page3> createState() => _Page3State();
+}
+
+class _Page3State extends State<Page3> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return MaterialApp(
+        home: Navigator(
+      pages: [
+        MaterialPage(child: Navigator2test()),
+      ],
+    ));
+  }
+}
+
+enum KanbanState { todo, doing, done }
+
+class HelloPage extends StatefulWidget {
+  const HelloPage({Key? key}) : super(key: key);
+
+  @override
+  State<HelloPage> createState() => _HelloState();
+}
+
+class _HelloState extends State<HelloPage> {
+  String _platformVersion = 'Unknown';
+  String _appVersion = 'unknown';
+
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+    initAppState();
+  }
+
+  Future<void> initAppState() async {
+    String appVersion;
+    try {
+      appVersion = await Hello.appVersion ?? 'Unknown app version';
+    } on PlatformException {
+      appVersion = 'Failed to get App version.';
+    }
+    if (!mounted) return;
+    setState(() {
+      _appVersion = appVersion;
+    });
+  }
+
+  Future<void> initPlatformState() async {
+    String platformVersion;
+    try {
+      platformVersion =
+          await Hello.platformVersion ?? 'Unknown platform version';
+    } on PlatformException {
+      platformVersion = 'Failed to get platform version.';
+    }
+    if (!mounted) return;
+
+    setState(() {
+      _platformVersion = platformVersion;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Plugin example app'),
+        ),
+        body: Center(
+          child: Column(
+            children: [
+              Text('platformVersion: $_platformVersion\n'),
+              Text('appVersion: $_appVersion\n'),
+              ElevatedButton(
+                onPressed: initAppState,
+                child: Text('appVersion: $_appVersion\n'),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
